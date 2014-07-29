@@ -23,14 +23,23 @@
 			
 			$database	= Database::Get();
 			$sql		= $database->prepare( "SELECT * FROM `{$this->table}` WHERE `id` = ?" );
+			
+			if ( $sql === false )
+				throw new Exception( "Prepare statement error" );
+			
 			$sql->bind_param( "i", $id );
-			$sql->execute();
+			if ( $sql->execute() === false )
+				throw new Exception("SQL Execution error");
 			
 			if ( $sql->affected_rows != 1 )
 				throw new Exception( "" );
 			
 			$row;
 			$result = $sql->get_result();
+			
+			if ( $result === false )
+				throw new Exception( "" );
+			
 			if ( $row = $result->fetch_assoc() )
 			{
 				foreach ( $row as $column_name => $column_value )
@@ -72,7 +81,7 @@
 					$values[] = "'{$value}'";
 			}
 			
-			$sql		.= "(" . implode(",", $values) . ")";echo $sql;
+			$sql		.= "(" . implode(",", $values) . ")";
 			$sql		= $database->prepare( $sql );
 			
 			if ($sql === false)
@@ -117,6 +126,38 @@
 		{
 			if ( !empty( $this->data['id'] ) && is_numeric( $this->data['id'] ) )
 			{
+				$database	= Database::Get();
+				$sql		= "SELECT COUNT(*) AS 'count' FROM `{$this->table}` WHERE `id` = ?";
+				$sql		= $database->prepare( $sql );
+				
+				if ( $sql === false )
+					throw new Exception("Prepare statement error");
+				
+				$sql->bind_param( "i", $this->data['id'] );
+				
+				if ( $sql->execute() === false )
+					throw new Exception("SQL Execution failed");
+				
+				try
+				{
+					$result = $sql->get_result();
+					if ( $result === false )
+						throw new Exception();
+					
+					$data = $result->fetch_assoc();
+					if ( is_null( $data ) )
+						throw new Exception();
+					
+					if ( $data['count'] <= 0 )
+						throw new Exception();
+					
+					$this->Update();
+				}
+				catch ( Exception $e )
+				{
+					$this->Insert();
+				}
+				
 			}
 			else
 				$this->Insert();

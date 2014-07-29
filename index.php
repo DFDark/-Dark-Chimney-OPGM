@@ -27,7 +27,7 @@
 		$page = explode( "/", $path );
 	}
 	
-	/*if ( isset( $_POST['vrfctn'] ) )
+	if ( isset( $_POST['vrfctn'] ) )
 	{
 		$controler			= new Controler();
 		$controler->content	= $page[0];
@@ -35,8 +35,8 @@
 		if ( !empty( $page[1] ) )
 			$controler->subcontent	= $page[1];
 			
-		$controler->Validate();
-	}*/
+		$controler->Process();
+	}
 	
 	$display = new Display();
 	$display->content		= $page[0];
