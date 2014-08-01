@@ -39,10 +39,10 @@
 					<meta name='author' content='Hamid \"Dark\" Khairy' />
 					<title>Fantasy Wars</title>
 					<link rel='stylesheet' type='text/css' href='" . ROOT_DIR . "/css/stylesheet.css' />
-					<!--link rel='stylesheet' type='text/css' href='/" . ROOT_DIR . "/css/style.css' />
 					<link rel='alternate' type='application/rss+xml' title='Ostrakon Feed'  href='" . ROOT_DIR . "/feed.php'  />
 					<link href='/" . ROOT_DIR . "/favicon.ico' rel='shortcut icon' type='image/x-icon' />
-					<script type='text/javascript' src='/" . ROOT_DIR . "/javascript/jquery.js'></script-->";
+					<script type='text/javascript' src='javascript/jquery.js'></script>
+					<script type='text/javascript' src='javascript/functions.js'></script>";
 			
 			echo "</head>";
 		}
@@ -85,10 +85,12 @@
 			echo "</div>";
 			echo "<div class='system_message' id='system_message' ></div>";
 			
+			$_SESSION['system_message'] = array( array( "Test", 0 ), array( "Another test" , 1 ) );
 			if ( isset( $_SESSION['system_message'] ) )
 			{
+				echo getcwd();
 				echo "<script>
-						$(document).ready( DisplayMessage('{$_SESSION['system_message'][0]}'," . ( $_SESSION['system_message'][1] ? "true" : "false" ) . ") );
+						$(document).ready( SystemMessages(" . json_encode( $_SESSION['system_message'] ) . ") );
 				</script>";
 				unset( $_SESSION['system_message'] );
 			}
@@ -102,7 +104,7 @@
 		private function RenderError404()
 		{
 			echo "<div>
-					sdf
+					Page not found
 				</div>";
 		}
 		
@@ -140,21 +142,15 @@
 		
 		private function RenderRegistration()
 		{
-			if (!empty($_POST))
-			{
-				try 
-				{
-					$player = new Player();//$_POST['username'], $_POST['password'] );
-					$player->Set('nickname', "DFDark" );
-					$player->CreatePasswordHash("hentai");
-					$player->Save();
-				}
-				catch ( Exception $e )
-				{
-					echo $e->GetMessage();
-				}
-			}
+			$username	= "";
+			if ( !empty( $_POST['username'] ) )
+				$username	= $_POST['username'];
 			
+			$email		= "";
+			if ( !empty( $_POST['email'] ) )
+				$email	= $_POST['email'];
+			
+		
 			echo "<div>
 					<form action='" . ROOT_DIR . "/registration-form/' method='post' >
 						<input type='hidden' name='vrfctn' />
@@ -162,11 +158,11 @@
 						<table>
 							<tr>
 								<td><label for='username' >Username: </label></td>
-								<td><input type='text' id='username' name='username' placeholder='Username' /></td>
+								<td><input type='text' id='username' name='username' placeholder='Username' value='{$username}' /></td>
 							</tr>
 							<tr>
 								<td><label for='email' >Email: </label></td>
-								<td><input type='text' id='email' name='email' placeholder='Email' /></td>
+								<td><input type='text' id='email' name='email' placeholder='Email' value='{$email}' /></td>
 							</tr>
 							<tr>
 								<td><label for='password' >Username: </label></td>

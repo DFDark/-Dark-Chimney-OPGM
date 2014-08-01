@@ -36,9 +36,11 @@
 			try
 			{
 				if ( empty( $_POST['email'] ) )
-					throw new Exception("");
+					throw new Exception("Email cannot be empty");
+				else if ( !filter_var( $_POST['email'], FILTER_VALIDATE_EMAIL ) )
+					throw new Exception("Email is invalid");
 				else if ( empty( $_POST['password'] ) )
-					throw new Exception("");
+					throw new Exception("Password has to have at least 6 characters!");
 				
 				$email		= $_POST['email'];
 				$password	= $_POST['password'];
