@@ -41,3 +41,20 @@ body {
 .clear {
 	clear: both;
 }
+
+#system_messages {
+	position: fixed;
+	margin: auto;
+	z-index: 1;
+	top: 100px;
+	width: 40%;
+	left: 50%;
+	margin: 0 0 0 -20%;
+}
+
+.system_message_0 {
+	background-color: #F00;
+}
+.system_message_1 {
+	background-color: #0F0;
+}

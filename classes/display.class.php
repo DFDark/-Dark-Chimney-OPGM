@@ -38,11 +38,12 @@
 					<meta name='robots' content='' />
 					<meta name='author' content='Hamid \"Dark\" Khairy' />
 					<title>Fantasy Wars</title>
-					<link rel='stylesheet' type='text/css' href='" . ROOT_DIR . "/css/stylesheet.css' />
-					<link rel='alternate' type='application/rss+xml' title='Ostrakon Feed'  href='" . ROOT_DIR . "/feed.php'  />
-					<link href='/" . ROOT_DIR . "/favicon.ico' rel='shortcut icon' type='image/x-icon' />
+					<link rel='stylesheet' type='text/css' href='css/stylesheet.css' />
+					<link rel='alternate' type='application/rss+xml' title='Ostrakon Feed'  href='feed.php'  />
+					<link href='favicon.ico' rel='shortcut icon' type='image/x-icon' />
 					<script type='text/javascript' src='javascript/jquery.js'></script>
-					<script type='text/javascript' src='javascript/functions.js'></script>";
+					<script type='text/javascript' src='javascript/functions.js'></script>
+					<script type='text/javascript' src='javascript/map.js'></script>";
 			
 			echo "</head>";
 		}
@@ -83,12 +84,11 @@
 				echo "</div>";
 				echo "<div class='clear' ></div>";
 			echo "</div>";
-			echo "<div class='system_message' id='system_message' ></div>";
+			echo "<div class='system_messages' id='system_messages' ></div>";
 			
 			$_SESSION['system_message'] = array( array( "Test", 0 ), array( "Another test" , 1 ) );
 			if ( isset( $_SESSION['system_message'] ) )
 			{
-				echo getcwd();
 				echo "<script>
 						$(document).ready( SystemMessages(" . json_encode( $_SESSION['system_message'] ) . ") );
 				</script>";
