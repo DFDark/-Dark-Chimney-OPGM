@@ -35,24 +35,31 @@
 		{
 			try
 			{
+				if ( empty( $_POST['nickname'] ) )
+					throw new Exception("Nickname cannot be empty");
 				if ( empty( $_POST['email'] ) )
 					throw new Exception("Email cannot be empty");
 				else if ( !filter_var( $_POST['email'], FILTER_VALIDATE_EMAIL ) )
 					throw new Exception("Email is invalid");
+				else if ( strcmp( $_POST['email'], $_POST['email_verification'] ) !== 0 )
+					throw new Exception("Email does not match verification");
 				else if ( empty( $_POST['password'] ) )
 					throw new Exception("Password has to have at least 6 characters!");
+				else if ( strcmp( $_POST['password'], $_POST['password_verification'] ) !== 0 )
+					throw new Exception("Password does not match verification");
 				
-				$email		= $_POST['email'];
-				$password	= $_POST['password'];
-				
-				$user		= new User();
-				$user->Set( 'nickname', $_POST['nickname'] );
-				$user->Set( 'email', $email );
-				$user->CreatePasswordHash( $password );
-				$user->Save();
+				$player		= new Player();
+				$player->Set( 'nickname', $_POST['nickname'] );
+				$player->Set( 'email', $_POST['email'] );
+				$player->CreatePasswordHash( $_POST['password'] );
+				$player->Set( 'created', time() );
+				$player->Set( 'last_active', time() );
+				$player->Set( 'game_points', 30 );
+				$player->Save();
 			}
 			catch ( Exception $e )
 			{
+				CommonLib::DisplayMessage( $e->GetMessage() );
 			}
 			
 			CommonLib::Redirect( $this->GetPath() );

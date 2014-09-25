@@ -38,12 +38,12 @@
 					<meta name='robots' content='' />
 					<meta name='author' content='Hamid \"Dark\" Khairy' />
 					<title>Fantasy Wars</title>
-					<link rel='stylesheet' type='text/css' href='css/stylesheet.css' />
+					<link rel='stylesheet' type='text/css' href='" . ROOT_DIR . "/css/stylesheet.css' />
 					<link rel='alternate' type='application/rss+xml' title='Ostrakon Feed'  href='feed.php'  />
 					<link href='favicon.ico' rel='shortcut icon' type='image/x-icon' />
-					<script type='text/javascript' src='javascript/jquery.js'></script>
-					<script type='text/javascript' src='javascript/functions.js'></script>
-					<script type='text/javascript' src='javascript/map.js'></script>";
+					<script type='text/javascript' src='" . ROOT_DIR . "/javascript/jquery.js'></script>
+					<script type='text/javascript' src='" . ROOT_DIR . "/javascript/functions.js'></script>
+					<script type='text/javascript' src='" . ROOT_DIR . "/javascript/map.js'></script>";
 			
 			echo "</head>";
 		}
@@ -77,7 +77,7 @@
 						{
 							case "lobby"					: $this->RenderNews();				break;
 							case "login-form"				: $this->RenderLogin();				break;
-							case "registration-form"		: $this->RenderRegistration();		break;
+							case "register"					: $this->RenderRegistration();		break;
 							default							: $this->RenderError404();			break;
 						}
 					echo "</div>";
@@ -86,13 +86,12 @@
 			echo "</div>";
 			echo "<div class='system_messages' id='system_messages' ></div>";
 			
-			$_SESSION['system_message'] = array( array( "Test", 0 ), array( "Another test" , 1 ) );
-			if ( isset( $_SESSION['system_message'] ) )
+			if ( isset( $_SESSION['system_messages'] ) )
 			{
 				echo "<script>
-						$(document).ready( SystemMessages(" . json_encode( $_SESSION['system_message'] ) . ") );
+						$(document).ready( SystemMessages(" . json_encode( $_SESSION['system_messages'] ) . ") );
 				</script>";
-				unset( $_SESSION['system_message'] );
+				unset( $_SESSION['system_messages'] );
 			}
 		}
 		
@@ -142,9 +141,9 @@
 		
 		private function RenderRegistration()
 		{
-			$username	= "";
-			if ( !empty( $_POST['username'] ) )
-				$username	= $_POST['username'];
+			$nickname	= "";
+			if ( !empty( $_POST['nickname'] ) )
+				$nickname	= $_POST['nickname'];
 			
 			$email		= "";
 			if ( !empty( $_POST['email'] ) )
@@ -152,21 +151,29 @@
 			
 		
 			echo "<div>
-					<form action='" . ROOT_DIR . "/registration-form/' method='post' >
+					<form action='" . ROOT_DIR . "/{$this->content}/' method='post' >
 						<input type='hidden' name='vrfctn' />
 						<input type='hidden' name='type' value='1' />
 						<table>
 							<tr>
-								<td><label for='username' >Username: </label></td>
-								<td><input type='text' id='username' name='username' placeholder='Username' value='{$username}' /></td>
+								<td><label for='nickname' >Nickname: </label></td>
+								<td><input type='text' id='nickname' name='nickname' placeholder='Nickname' value='{$nickname}' /></td>
 							</tr>
 							<tr>
 								<td><label for='email' >Email: </label></td>
 								<td><input type='text' id='email' name='email' placeholder='Email' value='{$email}' /></td>
 							</tr>
 							<tr>
-								<td><label for='password' >Username: </label></td>
+								<td><label for='email' >Email again: </label></td>
+								<td><input type='text' id='email_verification' name='email_verification' placeholder='Email' value='{$email}' /></td>
+							</tr>
+							<tr>
+								<td><label for='password' >Password: </label></td>
 								<td><input type='password' id='password' name='password' placeholder='Password' /></td>
+							</tr>
+							<tr>
+								<td><label for='password' >Password again: </label></td>
+								<td><input type='password' id='password_verification' name='password_verification' placeholder='Password' /></td>
 							</tr>
 							<tr>
 								<td colspan='2' style='text-align: center;' ><input type='submit' value='submit' /></td>
@@ -200,10 +207,12 @@
 								<td><input type='password' name='password' placeholder='Password' /></td>
 							</tr>
 							<tr>
-								<td colspan=2><input type='submit' value='Login' /></td>
+								<td colspan='2'><input type='submit' value='Login' /></td>
 							</tr>
 						</table>
 					</form>
+					<a href='" . ROOT_DIR . "/register/' >Not registered yet? Register here!</a>
+					<a href='" . ROOT_DIR . "/forgotten-password/' >Forgot password?</a>
 				</div>";
 		}
 	}
