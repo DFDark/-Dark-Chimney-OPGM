@@ -20,6 +20,7 @@ function SystemMessages( messages )
 			message_div.innerHTML = messages[i][0];
 			
 			div.appendChild( message_div );
+			setTimeout( function () { message_div.parentNode.removeChild(message_div); }, 5000);
 		}
 	}
 }

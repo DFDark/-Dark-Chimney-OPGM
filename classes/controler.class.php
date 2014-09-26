@@ -2,7 +2,7 @@
 	/**
 	* Controler
 	*
-	* @author   Hamid Khairy <hamid.khairy@webconsulting.cz>
+	* @author   Hamid Khairy <hamidkhairy@seznam.cz>
 	* @version  $Revision: 1.0.0.0 $
 	* @access   public
 	*/
@@ -19,6 +19,7 @@
 			{
 				case 1 : $this->RegisterPlayer();	break;
 				case 2 : $this->LoginPlayer();		break;
+				case 3 : $this->LogoutPlayer();		break;
 			}
 		}
 		
@@ -67,7 +68,37 @@
 		
 		private function LoginPlayer()
 		{
+			try
+			{
+				if ( empty( $_POST['email'] ) )
+					throw new Exception("Email cannot be empty");
+				else if ( !filter_var( $_POST['email'], FILTER_VALIDATE_EMAIL ) )
+					throw new Exception("Email is invalid");
+				else if ( empty( $_POST['password'] ) )
+					throw new Exception("Password cannot be empty");
+				
+				$player = new Player();
+				$player->Login( $_POST['email'], $_POST['password'] );
+				
+				$_SESSION['player'] = $player->Get('id');
+				CommonLib::DisplayMessage( "Login was successfull", 1 );
+				CommonLib::Redirect( ROOT_DIR . "/lobby/" );
+			}
+			catch ( Exception $e )
+			{
+				CommonLib::DisplayMessage( $e->GetMessage() );
+			}
 			
+			CommonLib::Redirect( $this->GetPath() );
+		}
+		
+		private function LogoutPlayer()
+		{
+			if ( !empty( $_SESSION['player'] ) )
+				unset( $_SESSION['player'] );
+			
+			CommonLib::DisplayMessage( "Player was signed off successfully", 1 );
+			CommonLib::Redirect( $this->GetPath() );
 		}
 	}
 ?>

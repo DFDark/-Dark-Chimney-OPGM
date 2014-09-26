@@ -75,7 +75,7 @@
 					echo "<div id='content' >";
 						switch( $this->content )
 						{
-							case "lobby"					: $this->RenderNews();				break;
+							case "lobby"					: $this->RenderLobby();				break;
 							case "login-form"				: $this->RenderLogin();				break;
 							case "register"					: $this->RenderRegistration();		break;
 							default							: $this->RenderError404();			break;
@@ -110,6 +110,17 @@
 		private function RenderHeader()
 		{
 			echo "<div id='banner' >";
+			
+			if ( !is_null($this->player) )
+			{
+				echo "<div>
+						<form action='" . ROOT_DIR . "/' method='post' >
+							<input type='hidden' name='vrfctn' />
+							<input type='hidden' name='type' value='3' />
+							<input type='submit' value='Log off' />
+						</form>
+					</div>";
+			}
 			
 			echo "</div>";
 			$this->RenderMainMenu();
@@ -182,9 +193,9 @@
 					</form>";
 		}
 		
-		private function RenderNews()
+		private function RenderLobby()
 		{
-			echo "<a href='" . ROOT_DIR . "/registration-form/' >Register Here!</a>";
+			echo "Lobby";
 		}
 		
 		private function RenderLogin()
@@ -193,10 +204,10 @@
 			if ( !empty($_POST['email']) )
 				$email = $_POST['email'];
 			
-			echo "<div>
+			echo "<div>dfsdfs
 					<form action='" . ROOT_DIR . "/login-form/' method='post' >
 						<input type='hidden' name='vrfctn' />
-						<input type='hidden' name='operation' value='2' />
+						<input type='hidden' name='type' value='2' />
 						<table>
 							<tr>
 								<td><label>Email:</label></td>
