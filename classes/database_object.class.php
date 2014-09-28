@@ -31,11 +31,10 @@
 			if ( $sql->execute() === false )
 				throw new Exception("SQL Execution error");
 			
-			if ( $sql->affected_rows != 1 )
-				throw new Exception( "" );
-			
 			$row;
 			$result = $sql->get_result();
+			if ( $database->affected_rows != 1 )
+				throw new Exception( "" );
 			
 			if ( $result === false )
 				throw new Exception( "" );

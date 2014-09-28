@@ -11,8 +11,10 @@
 	require('classes/exceptions.class.php');
 	require('classes/bcrypt.class.php');
 	require('classes/player.class.php');
+	require('classes/card.class.php');
 	require('classes/display.class.php');
 	require('classes/controler.class.php');
+	require('classes/player_cards.class.php');
 	require('classes/common_lib.class.php');
 	
 	session_start();

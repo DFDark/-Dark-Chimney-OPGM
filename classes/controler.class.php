@@ -10,6 +10,19 @@
 	{
 		public $content;
 		public $subcontent;
+		public $player;
+		
+		public function __construct()
+		{
+			try
+			{
+				if ( !empty($_SESSION['player']) && is_numeric($_SESSION['player']) )
+					$this->player = new Player( $_SESSION['player'] );
+			}
+			catch ( Exception $e )
+			{
+			}
+		}
 		
 		public function Process()
 		{
@@ -17,9 +30,10 @@
 			
 			switch ( $type )
 			{
-				case 1 : $this->RegisterPlayer();	break;
-				case 2 : $this->LoginPlayer();		break;
-				case 3 : $this->LogoutPlayer();		break;
+				case 1 : $this->RegisterPlayer();		break;
+				case 2 : $this->LoginPlayer();			break;
+				case 3 : $this->LogoutPlayer();			break;
+				case 4 : $this->GenerateBoosterPack();	break;
 			}
 		}
 		
@@ -80,7 +94,7 @@
 				$player = new Player();
 				$player->Login( $_POST['email'], $_POST['password'] );
 				
-				$_SESSION['player'] = $player->Get('id');
+				$_SESSION['player'] = (int)$player->Get('id');
 				CommonLib::DisplayMessage( "Login was successfull", 1 );
 				CommonLib::Redirect( ROOT_DIR . "/lobby/" );
 			}
@@ -98,6 +112,39 @@
 				unset( $_SESSION['player'] );
 			
 			CommonLib::DisplayMessage( "Player was signed off successfully", 1 );
+			CommonLib::Redirect( ROOT_DIR . "/" );
+		}
+		
+		private function GenerateBoosterPack()
+		{
+			try
+			{
+				if ( is_null( $this->player ) )
+					throw new Exception("");
+				else if ( empty( $_POST['booster_pack'] ) || !is_numeric( $_POST['booster_pack'] ) )
+					throw new Exception("");
+				
+				switch ( $_POST['booster_pack'] )
+				{
+					// Starter pack
+					case 1 :
+					{
+						for ( $i = 1; $i <= 6; $i++ )
+						{
+							$player_cards = new PlayerCards();
+							$player_cards->Set('player_id', $this->player->Get('id') );
+							$player_cards->Set('card_id', $i );
+							$player_cards->Set('ammount', 7 - $i );
+							$player_cards->Save();
+						}
+					} break;
+				}
+			}
+			catch ( Exception $e )
+			{
+				CommonLib::DisplayMessage( $e->GetMessage() );
+			}
+			
 			CommonLib::Redirect( $this->GetPath() );
 		}
 	}

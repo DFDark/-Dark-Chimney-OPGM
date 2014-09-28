@@ -16,8 +16,16 @@
 		
 		public function __construct()
 		{
-			if ( !empty($_SESSION['player']) && is_numeric($_SESSION['player']) )
-				$this->player = new Player( $_SESSION['player'] );
+			try
+			{
+				if ( !empty($_SESSION['player']) && is_numeric($_SESSION['player']) )
+					$this->player = new Player( $_SESSION['player'] );
+			}
+			catch ( Exception $e )
+			{
+				// This is just temporary, must be removed on deployment
+				CommonLib::DisplayMessage( $e->GetMessage() );
+			}
 		}
 		
 		public function Render()
@@ -78,6 +86,8 @@
 							case "lobby"					: $this->RenderLobby();				break;
 							case "login-form"				: $this->RenderLogin();				break;
 							case "register"					: $this->RenderRegistration();		break;
+							case "card-shop"				: $this->RenderCardShop();			break;
+							case "my-cards"					: $this->RenderMyCards();			break;
 							default							: $this->RenderError404();			break;
 						}
 					echo "</div>";
@@ -114,11 +124,17 @@
 			if ( !is_null($this->player) )
 			{
 				echo "<div>
-						<form action='" . ROOT_DIR . "/' method='post' >
+						<form action='" . ROOT_DIR . "/' method='post' id='logout_form' >
 							<input type='hidden' name='vrfctn' />
 							<input type='hidden' name='type' value='3' />
-							<input type='submit' value='Log off' />
 						</form>
+						<div>
+							Active Player: <strong>" . $this->player->Get('nickname') . "</strong>
+							<a onclick='document.getElementById(\"logout_form\").submit();' >Log Out</a>
+						</div>
+						<div>
+							Game Points: " . $this->player->Get('game_points') . "
+						</div>
 					</div>";
 			}
 			
@@ -128,13 +144,19 @@
 		
 		private function RenderMainMenu()
 		{
-			echo "<div id='main_menu' >
-					<table>
+			echo "<div id='main_menu' >";
+			
+			if ( !is_null( $this->player ) )
+			{
+				echo "<table>
 						<tr>
-							<td><a href='" . ROOT_DIR . "/' title='home' >Home</a></td>
+							<td><a href='" . ROOT_DIR . "/' title='Lobby' >Lobby</a></td>
+							<td><a href='" . ROOT_DIR . "/my-cards/' title='My Cards' >My Cards</a></td>
+							<td><a href='" . ROOT_DIR . "/card-shop/' title='Card Shop' >Card Shop</a></td>
 						</tr>
-					</table>
-				</div>";
+					</table>";
+			}
+			echo "</div>";
 		}
 		
 		private function RenderFooter()
@@ -204,7 +226,7 @@
 			if ( !empty($_POST['email']) )
 				$email = $_POST['email'];
 			
-			echo "<div>dfsdfs
+			echo "<div>
 					<form action='" . ROOT_DIR . "/login-form/' method='post' >
 						<input type='hidden' name='vrfctn' />
 						<input type='hidden' name='type' value='2' />
@@ -225,6 +247,60 @@
 					<a href='" . ROOT_DIR . "/register/' >Not registered yet? Register here!</a>
 					<a href='" . ROOT_DIR . "/forgotten-password/' >Forgot password?</a>
 				</div>";
+		}
+		
+		private function RenderCardShop()
+		{
+			echo "<div>";
+			try
+			{
+				if ( is_null( $this->player ) )
+					throw new Exception("");
+				
+				$player_cards = new PlayerCards();
+				if ( $player_cards->GetPlayerCardsCount( $this->player->Get('id') ) < 1 )
+				{
+					echo "<div>
+							<form action='" . ROOT_DIR . "/my-cards/' method='post' >
+								<input type='hidden' name='vrfctn' />
+								<input type='hidden' name='type' value='4' />
+								<input type='hidden' name='booster_pack' value='1' />
+								<input type='submit' value='Get Starter Pack!' />
+							</form>
+						</div>";
+				}
+			}
+			catch ( Exception $e )
+			{
+			}
+			echo "</div>";
+		}
+		
+		private function RenderMyCards()
+		{
+			echo "<div>";
+			try
+			{
+				if ( is_null( $this->player ) )
+					throw new Exception("");
+				
+				$player_cards = new PlayerCards();
+				if ( $player_cards->GetPlayerCardsCount( $this->player->Get('id') ) < 1 )
+					echo "You don't have any cards!";
+				else
+				{
+					$card_ids = $player_cards->GetPlayerCardsID( $this->player->Get('id') );
+					
+					foreach ( $card_ids as $card_id )
+					{
+						echo "<img src='" . ROOT_DIR . "/images/cards/blue/" . $card_id['card_id'] . ".jpg' />";
+					}
+				}
+			}
+			catch ( Exception $e )
+			{
+			}
+			echo "</div>";
 		}
 	}
 ?>

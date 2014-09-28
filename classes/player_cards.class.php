@@ -34,5 +34,29 @@
 			
 			return $card_ids;
 		}
+		
+		public function GetPlayerCardsCount($player_id)
+		{
+			if ( !is_numeric( $player_id ) )
+				throw new Exception("");
+			
+			$database	= Database::Get();
+			$sql		= $database->prepare( "SELECT COUNT(*) FROM `{$this->table}` WHERE `player_id` = ?" );
+			$sql->bind_param( "i", $player_id );
+			if ( $sql->execute() === false )
+				throw new Exception("execution error");
+			
+			$row;
+			$count = 0;
+			$result = $sql->get_result();
+			if ( $row = $result->fetch_row() )
+				$count = (int)$row[0];
+			
+			
+			$result->free();
+			$sql->close();
+			
+			return $count;
+		}
 	}
 ?>
