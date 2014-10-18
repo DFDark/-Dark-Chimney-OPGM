@@ -80,3 +80,42 @@ a:hover {
 .system_message_1 {
 	background-color: #0F0;
 }
+
+#main_window {
+	width: 1024px;
+	height: 600px;
+}
+
+.card_level_selector {
+	margin-top: 5px;
+	margin-bottom: 5px;
+	background-color: red;
+	padding: 2px;
+}
+
+.card_level_selector a {
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+.card {
+	position: inherit;
+	border: 1px solid black;
+	margin: 1px;
+	width: 400px;
+	float: left;
+}
+
+.card_image {
+	float: left;
+	margin-right: 4px;
+}
+
+.card_info {
+	font: 12px Verdana;
+}
+
+.card_info span{
+	font-weight: bold;
+	font-size: 13px;
+}

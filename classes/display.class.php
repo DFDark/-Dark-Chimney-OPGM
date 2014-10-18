@@ -51,7 +51,7 @@
 					<link href='favicon.ico' rel='shortcut icon' type='image/x-icon' />
 					<script type='text/javascript' src='" . ROOT_DIR . "/javascript/jquery.js'></script>
 					<script type='text/javascript' src='" . ROOT_DIR . "/javascript/functions.js'></script>
-					<script type='text/javascript' src='" . ROOT_DIR . "/javascript/map.js'></script>";
+					<script type='text/javascript' src='" . ROOT_DIR . "/javascript/board.js'></script>";
 			
 			echo "</head>";
 		}
@@ -88,6 +88,7 @@
 							case "register"					: $this->RenderRegistration();		break;
 							case "card-shop"				: $this->RenderCardShop();			break;
 							case "my-cards"					: $this->RenderMyCards();			break;
+							case "game-history"				: $this->RenderGameHistory();		break;
 							default							: $this->RenderError404();			break;
 						}
 					echo "</div>";
@@ -151,6 +152,7 @@
 				echo "<table>
 						<tr>
 							<td><a href='" . ROOT_DIR . "/' title='Lobby' >Lobby</a></td>
+							<td><a href='" . ROOT_DIR . "/game-history/' title='Game History' >Game History</a></td>
 							<td><a href='" . ROOT_DIR . "/my-cards/' title='My Cards' >My Cards</a></td>
 							<td><a href='" . ROOT_DIR . "/card-shop/' title='Card Shop' >Card Shop</a></td>
 						</tr>
@@ -217,7 +219,21 @@
 		
 		private function RenderLobby()
 		{
-			echo "Lobby";
+			echo "<div>";
+			try
+			{
+				if ( is_null( $this->player ) )
+					throw new Exception("");
+				
+				echo "<canvas id='main_window'></canvas>
+					<script type='text/javascript' >
+						var board = new Board();
+					</script>";
+			}
+			catch( Exception $e )
+			{
+			}
+			echo "</div>";
 		}
 		
 		private function RenderLogin()
@@ -257,6 +273,15 @@
 				if ( is_null( $this->player ) )
 					throw new Exception("");
 				
+				$level		= 1;
+				if ( is_numeric( $this->subcontent ) )
+					$level = $this->subcontent;
+				
+				echo "<div class='card_level_selector' >Card Level: ";
+				for ( $i = 1; $i <= 10; $i++ )
+					echo "<a href='" . ROOT_DIR . "/card-shop/{$i}/' >{$i}</a>";
+				echo "</div>";
+				
 				$player_cards = new PlayerCards();
 				if ( $player_cards->GetPlayerCardsCount( $this->player->Get('id') ) < 1 )
 				{
@@ -269,9 +294,28 @@
 							</form>
 						</div>";
 				}
+				
+				$dummy_card = new Card();
+				echo "<div id='card_list' >";
+				$card_list	= $dummy_card->GetCardsByLevel( $level );
+				foreach ( $card_list as $card )
+				{
+					echo "<div class='card' >
+							<div class='card_image' >
+								<img src='" . ROOT_DIR . "/images/cards/blue/" . $card->Get('id') . ".jpg' />
+							</div>
+							<div class='card_info' >
+								<span>" . $card->Get('name') . "</span><br/>
+								Price: " . $card->Get('price') . "
+							</div>
+							<div class='clear' ></div>
+						</div>";
+				}
+				echo "</div>";
 			}
 			catch ( Exception $e )
 			{
+				echo $e->GetMessage();
 			}
 			echo "</div>";
 		}
@@ -289,18 +333,43 @@
 					echo "You don't have any cards!";
 				else
 				{
-					$card_ids = $player_cards->GetPlayerCardsID( $this->player->Get('id') );
+					$level		= 1;
+					if ( is_numeric( $this->subcontent ) )
+						$level = $this->subcontent;
 					
+					echo "<div class='card_level_selector' >Card Level: ";
+					for ( $i = 1; $i <= 10; $i++ )
+						echo "<a href='" . ROOT_DIR . "/my-cards/{$i}/' >{$i}</a>";
+					echo "</div>";
+					
+					echo "<div id='card_list' >";
+					$card_ids	= $player_cards->GetPlayerCardsByLevel( $this->player->Get('id'), $level );
 					foreach ( $card_ids as $card_id )
 					{
-						echo "<img src='" . ROOT_DIR . "/images/cards/blue/" . $card_id['card_id'] . ".jpg' />";
+						$card = new Card($card_id['card_id']);
+						echo "<div class='card' >
+								<div class='card_image' >
+									<img src='" . ROOT_DIR . "/images/cards/blue/" . $card_id['card_id'] . ".jpg' />
+								</div>
+								<div class='card_info' >
+									<span>" . $card->Get('name') . "</span><br/>
+									Ammount: {$card_id['ammount']}
+								</div>
+								<div class='clear' ></div>
+							</div>";
 					}
+					echo "</div>";
 				}
 			}
 			catch ( Exception $e )
 			{
+				echo $e->GetMessage();
 			}
 			echo "</div>";
+		}
+	
+		private function RenderGameHistory()
+		{
 		}
 	}
 ?>
